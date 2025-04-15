@@ -1,0 +1,89 @@
+<section class="edit-page">
+  <form
+    action="<%= project._id ? `/projects/${project._id}/edit` : '/projects/create' %>"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <!-- <form action="/projects/create" method="POST"> -->
+    <div class="input-row">
+      <label for="title">Name:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Project name"
+        value="<%= project.title ? project.title : '' %>"
+      />
+    </div>
+    <div class="input-row">
+      <label for="summary">Summary:</label>
+      <input
+        name="summary"
+        id="summary"
+        placeholder="Project summary"
+        value="<%= project.summary ? project.summary : '' %>"
+      />
+    </div>
+    <div class="input-row">
+      <label for="description">Full Description:</label>
+      <textarea
+        name="description"
+        id="description"
+        placeholder="Project description"
+      >
+<%= project.description ? project.description : '' %></textarea
+      >
+    </div>
+    <div class="input-row">
+      <label>Technologies:</label>
+      <div class="responsive-table">
+        <% if (tech && tech.length > 0) { %> <% tech.forEach(function(techItem)
+        { %>
+        <div class="input-tech-item">
+          <input type="checkbox" id="<%= techItem %>" name="tech" value="<%=
+          techItem %>" <%= project.tech && project.tech.includes(techItem) ?
+          'checked' : '' %> />
+          <label for="<%= techItem %>"><%= techItem %></label>
+        </div>
+        <% }); %> <% } else { %>
+        <p>No technologies available</p>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <label for="screenshot">Upload Image:</label>
+      <input type="file" id="screenshot" name="screenshot" accept="image/*" />
+    </div>
+
+    <% if (project.screenshot) { %>
+    <div class="input-row">
+      <label>Current Image:</label>
+      <div class="project-image">
+        <img
+          src="<%= project.screenshot %>"
+          alt="Current image for <%= project.title %>"
+        />
+      </div>
+    </div>
+    <% } %>
+
+    <input type="hidden" name="existingScreenshot" value="<%= project.screenshot %>" />
+
+    <div class="button-row">
+      <button type="submit" class="btn btn-primary" value="Submit">
+        <%= project._id ? 'Update' : 'Create' %>
+      </button>
+      <a href="/projects/create" class="controls">
+        <button type="button" class="btn btn-secondary">Clear</button>
+      </a>
+      <a href="<%= previousPage %>" class="controls">
+        <button type="button" class="btn btn-secondary">Cancel</button>
+      </a>
+    </div>
+
+    <% if (errorMessage) { %>
+    <p class="error-message"><%= errorMessage %></p>
+    <% } %>
+  </form>
+</section>

@@ -1,0 +1,27 @@
+<%# Conditionally output form or submitted data %>
+<% if(status == 'received') { %>
+<section id="submission">
+  <p><%= formData.name && `Thank you, ${formData.name}.` %></p>
+  <p class="mb-0">The following message has been saved for you</p>
+  <p><%= formData.message %></p>
+  <p><%= "We'll get back to you later." %></p>
+</section>
+<% } else { %>
+<div class="container">
+    <div class="contact-container">
+        <form class="contact-form" action="/contact" method="POST">
+            <div class="input-row">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" />
+            </div>
+            <div class="input-row">
+                <label for="message">Message:</label>
+                <textarea id="message" name="message"></textarea>
+            </div>
+            <div class="button-row">
+                <button id="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<% } %>
