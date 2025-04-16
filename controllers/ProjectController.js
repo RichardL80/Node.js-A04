@@ -14,12 +14,6 @@ exports.Index = async function (request, response) {
       return;
     }
     
-    // Truncate descriptions before passing to the view
-    // projects = projects.map(project => ({
-    //   ...project,
-    //   description: truncateDescription(project.description || ''),
-    // }));
-    
     response.render('projects', {
       ...request.app.locals.viewData, 
       projects: projects, 
@@ -109,7 +103,7 @@ exports.CreateProject = [
     console.log('File uploaded:', req.file); // Log the uploaded file details
 
     const { title, summary, description, tech } = req.body;
-    const screenshot = req.file ? `/uploads/${req.file.filename}` : ''; // Save the file path
+    const screenshot = req.file ? `/uploads/${req.file.filename}` : '/images/placeholder.png'; // Save the file path
 
     const tempProjectObj = new Project({
       title: title,
@@ -134,26 +128,15 @@ exports.CreateProject = [
   },
 ];
 
-// Handle delete project form POST request
-// exports.DeleteProject = async function (request, response) {
-//   try {
-//     const id = request.params.id;
-//     await Project.findByIdAndDelete(id);
-//     response.status(200).json({ message: 'Project deleted successfully' });
-//   } catch (error) {
-//     console.error('Error deleting project:', error);
-//     response.status(500).send('Internal Server Error');
-//   }
-// };
 exports.DeleteProject = async function (request, response) {
   try {
     const id = request.params.id;
-    const deletedProject = await Project.findByIdAndDelete(id);
+    const deletedProject = await _projectOps.deleteProjectById(id);
 
-    if (deletedProject) {
+    if (deletedProject.project) {
       // Optionally delete the associated screenshot file
-      if (deletedProject.screenshot && deletedProject.screenshot !== '/images/placeholder.png') {
-        const filePath = path.join(process.cwd(), deletedProject.screenshot);
+      if (deletedProject.project.screenshot && deletedProject.project.screenshot !== '/images/placeholder.png') {
+        const filePath = path.join(process.cwd(), deletedProject.project.screenshot);
         fs.unlink(filePath, (err) => {
           if (err) {
             console.error(`Error deleting file: ${filePath}`, err);
@@ -163,7 +146,7 @@ exports.DeleteProject = async function (request, response) {
         });
       }
 
-      response.status(302).set('Location', '/projects').end();
+      response.json({success: true});
     } else {
       response.status(404).json({ message: 'Project not found' });
     }
@@ -236,28 +219,3 @@ exports.UpdateProject = [
     }
   },
 ];
-
-// exports.UpdateProject = async function (request, response) {
-//   try {
-//     const id = request.params.id;
-//     const title = request.body.title;
-//     const summary = request.body.summary;
-//     const description = request.body.description || '';
-//     const selectedTech = request.body.tech || [];
-//     const screenshot = request.body.screenshot || '/images/placeholder.png';
-  
-//     const updatedProject = {
-//       title: title,
-//       summary: summary,
-//       description: description,
-//       tech: Array.isArray(selectedTech) ? selectedTech : [selectedTech],
-//       screenshot: screenshot,
-//     };
-
-//     await Project.findByIdAndUpdate(id, updatedProject);
-//     response.redirect('/projects'); // Redirect to the projects list after updating
-//   } catch (error) {
-//     console.error('Error updating project:', error);
-//     response.status(500).send('Internal Server Error');
-//   }
-// };

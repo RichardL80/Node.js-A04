@@ -64,6 +64,20 @@ class ProjectOps {
       return { errorMsg: 'An error occurred while updating the project', project: null };
     }
   }
+
+  async deleteProjectById(id) {
+    try {
+      const result = await Project.findByIdAndDelete(id);
+      if (result) {
+        return { errorMsg: '', project: result };
+      } else {
+        return { errorMsg: 'Project not found', project: null };
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      return { errorMsg: 'An error occurred while deleting the project', project: null };
+    }
+  }
 }
 
 module.exports = ProjectOps;
